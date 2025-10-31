@@ -1,0 +1,144 @@
+npm init -y
+npm install express
+node library-system.js
+// library-system.js
+const express = require("express");
+const app = express();
+const port = 3000;
+
+// Sample books (static data)
+const books = [
+  { title: "The Great Gatsby", author: "F. Scott Fitzgerald", location: "Shelf A1" },
+  { title: "To Kill a Mockingbird", author: "Harper Lee", location: "Shelf A2" },
+  { title: "1984", author: "George Orwell", location: "Shelf B1" },
+  { title: "The Catcher in the Rye", author: "J.D. Salinger", location: "Shelf B2" },
+  { title: "Pride and Prejudice", author: "Jane Austen", location: "Shelf C1" },
+  { title: "The Hobbit", author: "J.R.R. Tolkien", location: "Shelf C2" },
+  { title: "Moby Dick", author: "Herman Melville", location: "Shelf D1" },
+  { title: "The Alchemist", author: "Paulo Coelho", location: "Shelf D2" },
+  { title: "Harry Potter", author: "J.K. Rowling", location: "Shelf E1" },
+  { title: "Think and Grow Rich", author: "Napoleon Hill", location: "Shelf E2" },
+];
+
+// API endpoint
+app.get("/api/book", (req, res) => {
+  const query = (req.query.title || "").toLowerCase();
+  const found = books.find(b => b.title.toLowerCase() === query);
+  if (found) {
+    res.json({ success: true, book: found });
+  } else {
+    res.json({ success: false, message: "Book not found" });
+  }
+});
+
+// Serve React frontend
+app.get("/", (req, res) => {
+  res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Library Book Locator</title>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+body {
+  background-color: #f4f8fb;
+  font-family: 'Segoe UI', sans-serif;
+}
+.container {
+  background: white;
+  width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+h1 { color: #2a5d9f; }
+input {
+  width: 90%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 15px;
+  font-size: 1em;
+}
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #2a5d9f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: 0.3s;
+}
+button:hover { background-color: #1e4d85; }
+.result { margin-top: 20px; font-size: 1.1em; }
+.found { color: green; }
+.not-found { color: red; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+function App() {
+  const [title, setTitle] = React.useState("");
+  const [result, setResult] = React.useState(null);
+
+  const findBook = async () => {
+    if (!title.trim()) {
+      setResult({ success: false, message: "Please enter a book name." });
+      return;
+    }
+    try {
+      const res = await fetch(\/api/book?title=\${encodeURIComponent(title)}\);
+      const data = await res.json();
+      setResult(data);
+    } catch {
+      setResult({ success: false, message: "Server error." });
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1>📚 Library Book Locator</h1>
+      <input
+        type="text"
+        placeholder="Enter book name..."
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <button onClick={findBook}>Find Location</button>
+      <div className="result">
+        {result && result.success && (
+          <p className="found">
+            ✅ <b>{result.book.title}</b> by {result.book.author} is located at{" "}
+            <b>{result.book.location}</b>.
+          </p>
+        )}
+        {result && !result.success && (
+          <p className="not-found">❌ {result.message}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>
+  `);
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(\🚀 Library System running at http://localhost:\${port}\);
+});
