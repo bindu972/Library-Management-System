@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Book Locator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f8fb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 400px;
+    }
+    h1 {
+      color: #2a5d9f;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 15px;
+      font-size: 1em;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #2a5d9f;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #1e4d85;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1.1em;
+    }
+    .found {
+      color: green;
+    }
+    .not-found {
+      color: red;
+    }
+    .book-list {
+      margin-top: 25px;
+      text-align: left;
+      font-size: 0.95em;
+      color: #555;
+    }
+    .book-list ul {
+      list-style: none;
+      padding: 0;
+    }
+    .book-list li {
+      padding: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Library Book Locator</h1>
+    <input type="text" id="bookInput" placeholder="Enter book name...">
+    <button onclick="findBook()">Find Location</button>
+    <div class="result" id="result"></div>
+
+    <div class="book-list">
+      <h3>Available Books:</h3>
+      <ul id="bookList"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Predefined book data
+    const books = [
+      { title: "The Great Gatsby", author: "F. Scott Fitzgerald", location: "Shelf A1" },
+      { title: "To Kill a Mockingbird", author: "Harper Lee", location: "Shelf A2" },
+      { title: "1984", author: "George Orwell", location: "Shelf B1" },
+      { title: "The Catcher in the Rye", author: "J.D. Salinger", location: "Shelf B2" },
+      { title: "Pride and Prejudice", author: "Jane Austen", location: "Shelf C1" },
+      { title: "The Hobbit", author: "J.R.R. Tolkien", location: "Shelf C2" },
+      { title: "Moby Dick", author: "Herman Melville", location: "Shelf D1" },
+      { title: "The Alchemist", author: "Paulo Coelho", location: "Shelf D2" },
+      { title: "Harry Potter", author: "J.K. Rowling", location: "Shelf E1" },
+      { title: "Think and Grow Rich", author: "Napoleon Hill", location: "Shelf E2" }
+    ];
+
+    // Display list of all books
+    const bookList = document.getElementById('bookList');
+    books.forEach(book => {
+      const li = document.createElement('li');
+      li.textContent = ${book.title} — ${book.author};
+      bookList.appendChild(li);
+    });
+
+    // Function to find book location
+    function findBook() {
+      const input = document.getElementById('bookInput').value.trim().toLowerCase();
+      const resultDiv = document.getElementById('result');
+
+      if (input === "") {
+        resultDiv.innerHTML = "<span class='not-found'>Please enter a book name.</span>";
+        return;
+      }
+
+      const foundBook = books.find(book => book.title.toLowerCase() === input);
+
+      if (foundBook) {
+        resultDiv.innerHTML = <span class='found'>✅ "${foundBook.title}" by ${foundBook.author} is located at <b>${foundBook.location}</b>.</span>;
+      } else {
+        resultDiv.innerHTML = <span class='not-found'>❌ Book not found in the library.</span>;
+      }
+    }
+  </script>
+</body>
+</html>
